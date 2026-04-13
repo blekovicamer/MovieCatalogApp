@@ -1,10 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="Base.Theme.MovieCatalogApp" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorSecondaryContainer">#E91E63</item>
         <item name="colorOnSecondaryContainer">@color/white</item>
-
         <item name="colorOnSurfaceVariant">@color/white</item>
-
         <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
     </style>
 
@@ -16,6 +15,13 @@
 
     <style name="App.CustomIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">#E91E63</item>
-        <item name="android:height">42dp</item> <item name="marginHorizontal">12dp</item>
+        <item name="android:height">42dp</item>
+        <item name="marginHorizontal">12dp</item>
     </style>
+
+    <style name="RatingBarAccent" parent="Theme.AppCompat">
+        <item name="colorControlNormal">#9BA3AF</item>
+        <item name="colorControlActivated">#FFC107</item>
+    </style>
+
 </resources>

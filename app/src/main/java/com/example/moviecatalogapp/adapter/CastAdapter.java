@@ -1,5 +1,9 @@
 package com.example.moviecatalogapp.adapter;
 
+// ADD THESE TWO IMPORTS
+import android.content.Intent;
+import com.example.moviecatalogapp.ActorDetailsActivity;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,12 +38,13 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastViewHolder
 
         Glide.with(holder.itemView.getContext())
                 .load(member.getProfileUrl())
-                .placeholder(android.R.drawable.ic_menu_report_image) // In case there's no photo
+                .placeholder(android.R.drawable.ic_menu_report_image)
                 .into(holder.ivPhoto);
 
-        // This handles the click to go to the Actor's page later
         holder.itemView.setOnClickListener(v -> {
-            // We will add the Actor Activity intent here next!
+            Intent intent = new Intent(v.getContext(), ActorDetailsActivity.class);
+            intent.putExtra("person_id", member.getId());
+            v.getContext().startActivity(intent);
         });
     }
 

@@ -1,7 +1,7 @@
 package com.example.moviecatalogapp.model;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.List; // FIX: This solves the "cannot find symbol class List" error
+import java.util.List;
 
 public class Movie {
     @SerializedName("id")
@@ -25,7 +25,6 @@ public class Movie {
     @SerializedName("release_date")
     private String releaseDate;
 
-    // New fields for the "About movie" section
     @SerializedName("budget")
     private long budget;
 
@@ -35,11 +34,10 @@ public class Movie {
     @SerializedName("production_countries")
     private List<ProductionCountry> productionCountries;
 
-    // New field for the Cast section
     @SerializedName("credits")
     private Credits credits;
 
-    // Getters
+    // --- GETTERS ---
     public int getId() { return id; }
     public String getTitle() { return title; }
     public String getOverview() { return overview; }
@@ -47,21 +45,45 @@ public class Movie {
     public Credits getCredits() { return credits; }
 
     public String getPosterPath() {
+        // This check prevents double-prefixing the URL if it's already saved in full
+        if (posterPath != null && posterPath.startsWith("http")) {
+            return posterPath;
+        }
         return "https://image.tmdb.org/t/p/w500" + posterPath;
     }
 
     public String getBackdropPath() {
+        // This check prevents double-prefixing the URL for favorites
+        if (backdropPath != null && backdropPath.startsWith("http")) {
+            return backdropPath;
+        }
         return "https://image.tmdb.org/t/p/w780" + backdropPath;
     }
 
     public String getReleaseYear() {
-        if (releaseDate != null && releaseDate.length() >= 4) {
+        // Check if the date is null or empty first
+        if (releaseDate == null || releaseDate.isEmpty()) {
+            return "N/A";
+        }
+        // If it's a full date like 2023-10-12, take the first 4 digits
+        if (releaseDate.length() >= 4) {
             return releaseDate.substring(0, 4);
         }
-        return "N/A";
+        return releaseDate;
     }
 
-    // Formatting methods for Budget and Revenue
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
     public String getFormattedBudget() {
         return budget == 0 ? "N/A" : "$" + String.format("%,d", budget);
     }
@@ -77,8 +99,24 @@ public class Movie {
         return "N/A";
     }
 
-    // --- Inner Classes for Nested Data ---
+    // --- SETTERS (REQUIRED FOR FAVORITES LOGIC) ---
+    public void setId(int id) {
+        this.id = id;
+    }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
+    public void setVoteAverage(double voteAverage) {
+        this.voteAverage = voteAverage;
+    }
+
+    // --- INNER CLASSES ---
     public static class ProductionCountry {
         @SerializedName("name")
         private String name;
@@ -87,7 +125,7 @@ public class Movie {
 
     public static class Credits {
         @SerializedName("cast")
-        private List<CastMember> cast; // Ensure CastMember.java exists in your model folder
+        private List<CastMember> cast;
         public List<CastMember> getCast() { return cast; }
     }
 }

@@ -3,6 +3,8 @@ package com.example.moviecatalogapp.model;
 import com.google.gson.annotations.SerializedName;
 
 public class CastMember {
+
+    // 1. Add the ID field
     @SerializedName("id")
     private int id;
 
@@ -14,6 +16,11 @@ public class CastMember {
 
     @SerializedName("profile_path")
     private String profilePath;
+
+    // 2. Add this getter method (This fixes the "cannot find symbol" error)
+    public int getId() {
+        return id;
+    }
 
     public String getName() { return name; }
     public String getCharacter() { return character; }

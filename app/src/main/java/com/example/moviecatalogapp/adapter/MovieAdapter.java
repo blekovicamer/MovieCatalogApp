@@ -1,5 +1,6 @@
 package com.example.moviecatalogapp.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,54 +10,65 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import com.example.moviecatalogapp.MovieDetailsActivity; // Import your new Activity
+import com.example.moviecatalogapp.MovieDetailsActivity;
 import com.example.moviecatalogapp.R;
 import com.example.moviecatalogapp.model.Movie;
 import java.util.List;
+import java.util.Locale; // Added for formatting
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private List<Movie> movieList;
+    private Context context;
+    private boolean isGrid;
 
-    public MovieAdapter(List<Movie> movieList) {
+    public MovieAdapter(List<Movie> movieList, Context context, boolean isGrid) {
         this.movieList = movieList;
+        this.context = context;
+        this.isGrid = isGrid;
     }
 
     @NonNull
     @Override
     public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie, parent, false);
+        int layoutId = isGrid ? R.layout.item_movie_grid : R.layout.item_movie;
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
         return new MovieViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
         Movie movie = movieList.get(position);
+
+        // 1. Set Title
         holder.tvTitle.setText(movie.getTitle());
-        holder.tvRating.setText(String.valueOf(movie.getVoteAverage()));
+
+        // 2. Fix Decimal Display (e.g., 7.58... -> 7.6)
+        double rating = movie.getVoteAverage();
+        String formattedRating = String.format(Locale.US, "%.1f", rating);
+        holder.tvRating.setText(formattedRating);
+
+        // 3. Set Year
         holder.tvYear.setText(movie.getReleaseYear());
 
         Glide.with(holder.itemView.getContext())
                 .load(movie.getPosterPath())
                 .into(holder.ivPoster);
 
-        // Handle Click to open Details
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), MovieDetailsActivity.class);
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), MovieDetailsActivity.class);
+            intent.putExtra("movie_id", movie.getId());
+            intent.putExtra("movie_title", movie.getTitle());
+            intent.putExtra("movie_overview", movie.getOverview());
+            intent.putExtra("movie_poster", movie.getPosterPath());
+            intent.putExtra("movie_backdrop", movie.getBackdropPath());
 
-                // Passing the data to MovieDetailsActivity
-                intent.putExtra("movie_title", movie.getTitle());
-                intent.putExtra("movie_overview", movie.getOverview());
-                intent.putExtra("movie_poster", movie.getPosterPath());
-                intent.putExtra("movie_backdrop", movie.getBackdropPath()); // Ensure this is in Movie.java
-                intent.putExtra("movie_date", movie.getReleaseYear());
-                intent.putExtra("movie_rating", movie.getVoteAverage());
-                intent.putExtra("movie_id", movie.getId());
+            // CHANGE THIS: Pass the raw releaseDate instead of the formatted getReleaseYear()
+            // This ensures MovieDetailsActivity has the full string to work with.
+            intent.putExtra("movie_date", movie.getReleaseYear());
 
-                v.getContext().startActivity(intent);
-            }
+            intent.putExtra("movie_rating", movie.getVoteAverage());
+            v.getContext().startActivity(intent);
         });
     }
 
